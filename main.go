@@ -4,32 +4,46 @@ import (
 	"flag"
 	"fmt"
 	"os"
-
-	"github.com/arxdsilva/go-release/release"
 )
-
-// TO DO: make it buildable by a file like .gorelease
 
 func main() {
 	var (
-		path = flag.String("p", "", "Path to your app (required)")
-		OSys = flag.String("os", "", "Systems to build your app (required)")
-		// architecture = flag.String("a", "", "Kind of architecture wanted (required)")
+		path    = flag.String("p", ".", "Path to your app")
+		OSys    = flag.String("os", "all", "Systems to build your app")
+		version = flag.String("v", "", "App version")
 	)
 	flag.Parse()
 	args := os.Args
-	_, existARC := release.OS[*OSys]
+	_, existOS := OS[*OSys]
 	switch {
-	case len(args) < 2 || args[1] == "-h":
+	case args[1] == "-h":
 		flag.Usage()
 		os.Exit(1)
-	case len(*OSys) == 0 || len(*path) == 0:
-		flag.Usage()
-		os.Exit(1)
-	case !existARC:
+	case !existOS:
 		fmt.Println("Architecture not valid")
 		flag.Usage()
 		os.Exit(1)
 	}
-	Release(*path, *OSys)
+	for osystem, arc := range OS {
+		for _, a := range arc {
+			app := &AppInfo{
+				Path:         *path,
+				Version:      *version,
+				OpSystem:     osystem,
+				Architecture: a,
+			}
+			Release(app)
+		}
+	}
+}
+
+func (app *AppInfo) createReleaseDir() error {
+	err := os.Chdir(app.Path)
+	if err != nil {
+		return err
+	}
+	if _, err := os.Stat("_release"); os.IsNotExist(err) {
+		os.Mkdir("_release", 0777)
+	}
+	return nil
 }
