@@ -10,18 +10,6 @@ import (
 
 // TO DO: make it buildable by a file like .gorelease
 
-// var ARC = map[string]struct{}{
-// 	"386":      struct{}{},
-// 	"amd64":    struct{}{},
-// 	"arm":      struct{}{},
-// 	"arm64":    struct{}{},
-// 	"ppc64":    struct{}{},
-// 	"ppc64le":  struct{}{},
-// 	"mips64":   struct{}{},
-// 	"mips64le": struct{}{},
-// 	"all":      struct{}{},
-// }
-
 func main() {
 	var (
 		path = flag.String("p", "", "Path to your app (required)")

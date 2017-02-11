@@ -6,7 +6,18 @@ import (
 	"path/filepath"
 )
 
-// OS holds the architectures supported by each OS
+var ARC = map[string]struct{}{
+	"386":      struct{}{},
+	"amd64":    struct{}{},
+	"arm":      struct{}{},
+	"arm64":    struct{}{},
+	"ppc64":    struct{}{},
+	"ppc64le":  struct{}{},
+	"mips64":   struct{}{},
+	"mips64le": struct{}{},
+	"all":      struct{}{},
+}
+
 var OS = map[string][]string{
 	"android":   []string{"arm"},
 	"darwin":    []string{"386", "amd64", "arm", "arm64"},
@@ -18,7 +29,7 @@ var OS = map[string][]string{
 	"plan9":     []string{"386", "amd64"},
 	"solaris":   []string{"amd64"},
 	"windows":   []string{"386", "amd64"},
-	"all":       []string{"all"},
+	"all":       []string{},
 }
 
 const (
@@ -41,12 +52,12 @@ func Release(path string, osys ...string) error {
 			// log error OS not supported
 			continue
 		}
-		for _, ARC := range OS[Os] {
-			// build binary
+		for _, arc := range OS[Os] {
+			// build binary with defer func
 			//exec.CommandContext(ctx, name, arg)
 			// move file using os.Rename
 			// https://gist.github.com/johnzan/cbc3bf88a8c43b71112d
-			err := os.Rename("appName", filepath.Join("_release", fmt.Sprintf("%s-%s.%s-%s.tar.gz", appName, version, Os, ARC)))
+			err := os.Rename("appName", filepath.Join("_release", fmt.Sprintf("%s-%s.%s-%s.tar.gz", appName, version, Os, arc)))
 			if err != nil {
 				return err
 			}
